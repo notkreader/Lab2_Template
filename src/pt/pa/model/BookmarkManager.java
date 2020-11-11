@@ -5,8 +5,10 @@ import pt.pa.adts.Position;
 import pt.pa.adts.Tree;
 import pt.pa.adts.TreeLinked;
 
+import java.awt.print.Book;
+
 public class BookmarkManager {
-    private TreeLinked<BookmarkEntry> bookmarks;
+    private Tree<BookmarkEntry> bookmarks;
 
     public BookmarkManager() {
         BookmarkEntry bme = new BookmarkEntry("Bookmarks");
@@ -31,6 +33,12 @@ public class BookmarkManager {
         return false;
     }
 
+    /*
+    private boolean exists(String key) {
+        return find(key) != null;
+    }
+     */
+
     public void addBookmarkFolder(String keyParent, String keyFolder) throws BookmarkInvalidOperation {
         if(keyParent == null || keyFolder == null || !exists(keyParent) || exists(keyFolder))
             throw new BookmarkInvalidOperation("Invalid arguments");
@@ -48,19 +56,41 @@ public class BookmarkManager {
     }
 
     public int getTotalEntries() {
-        int total = bookmarks.size();
+        int total = bookmarks.size() - 1;
         return total;
     }
 
     public String getParentFolder(String keyEntry) {
-        if(keyEntry == null || !exists(keyEntry) || !find(keyEntry).element().isFolder())
+        if(!exists(keyEntry) || !find(keyEntry).element().isFolder())
             throw new BookmarkInvalidOperation("Invalid arguments");
         Position<BookmarkEntry> parent = find(keyEntry);
         String folder = parent.element().getKey();
         return folder;
     }
 
-    public TreeLinked<BookmarkEntry> getBookmarkTree() {
+    public Tree<BookmarkEntry> getBookmarkTree() {
         return bookmarks;
+    }
+
+    public int getTotalFolders() {
+        int totalFolders = 0;
+        Iterable<BookmarkEntry> list = bookmarks.elements();
+        for(BookmarkEntry bme : list) {
+            if(bme.isFolder())
+                totalFolders++;
+        }
+        return totalFolders;
+    }
+
+    public String fullPathOf(String keyEntry) throws BookmarkInvalidOperation {
+        if(find(keyEntry) == null)
+            throw new BookmarkInvalidOperation("Invalid key entry");
+        Position<BookmarkEntry> p = find(keyEntry);
+        String path = "- " + keyEntry;
+        while(bookmarks.parent(p) != null) {
+            p = bookmarks.parent(p);
+            path += " - " +  p.element().getKey();
+        }
+        return path;
     }
 }
