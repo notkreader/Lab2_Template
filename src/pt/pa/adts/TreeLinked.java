@@ -301,6 +301,14 @@ public class TreeLinked<E> implements Tree<E> {
         return str + "-";
     }
 
+    public void move(Position<E> existingPosition, Position<E> newParent) {
+        TreeNode oldNode = checkPosition(existingPosition);
+        TreeNode newNode = checkPosition(newParent);
+        remove(existingPosition);
+        oldNode.parent = newNode;
+        newNode.children.add(oldNode);
+    }
+
     /**
      * inner class - represent a node of a tree. Each node have a list of children, that can be empty.
      */
