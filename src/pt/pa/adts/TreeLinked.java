@@ -302,11 +302,12 @@ public class TreeLinked<E> implements Tree<E> {
     }
 
     public void move(Position<E> existingPosition, Position<E> newParent) {
-        TreeNode oldNode = checkPosition(existingPosition);
-        TreeNode newNode = checkPosition(newParent);
-        remove(existingPosition);
-        oldNode.parent = newNode;
-        newNode.children.add(oldNode);
+        TreeNode existingNode = checkPosition(existingPosition);
+        TreeNode newParentNode = checkPosition(newParent);
+        TreeNode oldParentNode = existingNode.parent;
+        existingNode.parent = newParentNode;
+        newParentNode.children.add(existingNode);
+        oldParentNode.children.remove(existingNode);
     }
 
     /**
